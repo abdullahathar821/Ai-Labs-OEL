@@ -1,0 +1,42 @@
+import numpy as np
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
+# Define the XNOR truth table
+# Inputs (X) and Outputs (y)
+X = np.array([
+    [0, 0],
+    [0, 1],
+    [1, 0],
+    [1, 1]
+])
+y = np.array([
+    [1],  # XNOR(0, 0) = 1
+    [0],  # XNOR(0, 1) = 0
+    [0],  # XNOR(1, 0) = 0
+    [1]   # XNOR(1, 1) = 1
+])
+
+# Build the ANN model
+model = Sequential([
+    Dense(4, input_dim=2, activation='relu'),  # Hidden layer with 4 neurons
+    Dense(1, activation='sigmoid')            # Output layer with 1 neuron
+])
+
+# Compile the model
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+# Train the model
+model.fit(X, y, epochs=1000, verbose=0)  # Train for 1000 epochs
+
+# Evaluate the model
+accuracy = model.evaluate(X, y, verbose=0)[1]
+print(f"Training Accuracy: {accuracy * 100:.2f}%")
+
+# Test the model
+predictions = model.predict(X)
+predictions_binary = (predictions > 0.5).astype(int)
+
+print("\nXNOR Function Predictions:")
+for i, (input_pair, pred, binary_pred) in enumerate(zip(X, predictions, predictions_binary)):
+    print(f"Input: {input_pair}, Predicted: {pred[0]:.2f}, Binary: {binary_pred[0]}, Actual: {y[i][0]}")
